@@ -12,29 +12,21 @@ class AppDynamicsJob(unittest.TestCase):
     def setUp(self):
         # AppDynamics will automatically override this web driver
         # as documented in https://docs.appdynamics.com/display/PRO44/Write+Your+First+Script
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(30)
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
     
     def test_app_dynamics_job(self):
+        code_arr = parse_survey_code()
         driver = self.driver
         driver.get("https://mcdvoice.com/")
         driver.find_element_by_id("header").click()
         driver.find_element_by_id("CN1").click()
-        driver.find_element_by_id("CN1").clear()
-        driver.find_element_by_id("CN1").send_keys("04705")
-        driver.find_element_by_id("CN2").clear()
-        driver.find_element_by_id("CN2").send_keys("16401")
-        driver.find_element_by_id("CN3").clear()
-        driver.find_element_by_id("CN3").send_keys("21124")
-        driver.find_element_by_id("CN4").clear()
-        driver.find_element_by_id("CN4").send_keys("13544")
-        driver.find_element_by_id("CN5").clear()
-        driver.find_element_by_id("CN5").send_keys("00059")
-        driver.find_element_by_id("CN6").clear()
-        driver.find_element_by_id("CN6").send_keys("9")
+        for i in range(len(code_arr)):
+            driver.find_element_by_id(f"CN{i+1}").clear()
+            driver.find_element_by_id(f"CN{i+1}").send_keys(code_arr[i])
         driver.find_element_by_id("NextButton").click()
         driver.find_element_by_id("textR000455.1").click()
         driver.find_element_by_id("NextButton").click()
@@ -109,8 +101,10 @@ class AppDynamicsJob(unittest.TestCase):
         self.assertEqual([], self.verificationErrors)
 
 def parse_survey_code():
-
+    return sys.argv[1].split("-")
 
 if __name__ == "__main__":
-
+    # Extract arguments and pass only those to the script
+    survey_code_arg = sys.argv[1] if len(sys.argv) > 1 else ""
+    sys.argv = sys.argv[:1]  # Prevent unittest from processing additional arguments
     unittest.main()
